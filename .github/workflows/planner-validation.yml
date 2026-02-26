@@ -1,0 +1,53 @@
+name: Planner Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate-planner:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          git diff --name-only origin/${{ github.base_ref }}...HEAD > changed_files.txt
+          cat changed_files.txt
+
+      - name: Check if structural files were modified
+        id: structural-check
+        run: |
+          if grep -E "app/Models/|database/migrations/|app/Filament/|app/Policies/|app/Enums/|app/Actions/|app/Services/" changed_files.txt; then
+            echo "STRUCTURAL_CHANGES=true" >> $GITHUB_ENV
+          else
+            echo "STRUCTURAL_CHANGES=false" >> $GITHUB_ENV
+          fi
+
+      - name: Check if planner exists
+        id: planner-check
+        run: |
+          if grep -E "^\.ai/plans/.*\.md$" changed_files.txt; then
+            echo "PLANNER_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "PLANNER_EXISTS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Fail if structural changes exist without planner
+        run: |
+          echo "Structural changes: $STRUCTURAL_CHANGES"
+          echo "Planner exists: $PLANNER_EXISTS"
+
+          if [ "$STRUCTURAL_CHANGES" = "true" ] && [ "$PLANNER_EXISTS" = "false" ]; then
+            echo "ERROR: Structural changes detected but no planner file found in .ai/plans/"
+            exit 1
+          fi
+
+      - name: Success
+        run: echo "Planner validation passed"
