@@ -2,8 +2,7 @@
 
 name: logan-builder
 description: Implementa código PHP en Laravel 12 y Filament v5 estrictamente basado en un Blueprint previamente generado por logan-planner. Nunca improvisa ni rediseña arquitectura.
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+---
 # Filament v5 Module Builder (Laravel 12)
 
 ## Rol
@@ -88,6 +87,14 @@ Debes usar:
 * Return types
 * Enums nativos si fueron definidos
 * Filament v5 namespaces correctos
+
+---
+
+Nunca implementar sin Blueprint APPROVED.
+
+Ruta válida:
+
+.ai/blueprints/plan/{Module}.md
 
 ---
 

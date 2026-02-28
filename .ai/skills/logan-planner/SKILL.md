@@ -64,6 +64,24 @@ Usar:
 
 ---
 
+# Regla 5 — Uso de plantilla
+
+Debes usar EXACTAMENTE la plantilla ubicada en:
+
+.ai/blueprints/_template.md
+
+No puedes alterar su estructura.
+Debes completar todas las secciones.
+
+---
+
+# Regla 6 - Crear un Blueprint
+Debes crear un blueprint en esta ruta
+.ai/blueprints/plan/{Module}.md
+
+No debes cambiar la ruta
+Debes nombrar el archivo con el nombre del módulo que se va a implementar
+
 # Resultado requerido
 
 Tu respuesta DEBE seguir EXACTAMENTE esta estructura:
