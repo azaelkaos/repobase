@@ -1,363 +1,389 @@
-# Arquitectura de Desarrollo Guiado por Planificación (Planner → Builder → Tester)
+# Blueprint-Driven Development System
 
-Este proyecto utiliza una arquitectura basada en planificación obligatoria antes de la implementación, con validaciones automáticas en entorno local y remoto para garantizar consistencia, mantenibilidad y calidad del código.
-
-Este flujo es independiente de la tecnología utilizada y puede aplicarse a cualquier tipo de proyecto.
+Laravel 12 + Filament v5
 
 ---
 
-# Objetivo
+# Propósito
 
-Garantizar que todo cambio estructural:
+Este sistema implementa un flujo de desarrollo determinista basado en Blueprints.
 
-* Sea planificado antes de implementarse
-* Siga una arquitectura consistente
-* Sea validado automáticamente
-* Sea testeado antes de integrarse
-* Sea trazable desde su origen hasta su implementación
+El objetivo es eliminar:
 
----
+* improvisación
+* ambigüedad
+* desviaciones arquitectónicas
+* malas prácticas
+* modificaciones no auditadas
 
-# Flujo obligatorio de desarrollo
-
-El flujo consta de 5 fases obligatorias:
-
-```
-PLAN → BRANCH → BUILD → TEST → PULL REQUEST → MERGE → CLEANUP
-```
+Todo el código debe originarse desde un Blueprint aprobado.
 
 ---
 
-# Fase 1: Planificación (Planner)
+# Principio fundamental
 
-Antes de escribir cualquier código estructural, se debe crear un archivo de planificación.
+No se escribe código primero.
 
-Ruta:
+Primero se diseña el Blueprint.
+Luego se implementa.
+Luego se audita.
+Luego se prueba.
 
-```
-.ai/plans/
-```
-
-Formato:
-
-```
-.ai/plans/NombreEntidad.md
-```
-
-Ejemplo:
-
-```
-.ai/plans/Customer.md
-```
-
-El planner define:
-
-* Modelos
-* Migraciones
-* Relaciones
-* Recursos
-* Formularios
-* Tablas
-* Permisos
-* Tests
-
-Propósito:
-
-Evitar implementación sin diseño previo.
+Nunca al revés.
 
 ---
 
-# Fase 2: Creación de rama
-
-Formato obligatorio:
-
-```
-{tipo}/{descripcion-kebab-case}
-```
-
-Tipos permitidos:
-
-```
-feature/
-fix/
-refactor/
-config/
-test/
-hotfix/
-```
-
-Ejemplos válidos:
-
-```
-feature/customer-module
-fix/order-total
-refactor/user-resource
-config/cache-settings
-test/customer-resource
-```
-
-Ejemplos inválidos:
-
-```
-customer
-new-feature
-test123
-```
-
-Crear rama:
-
-```
-git checkout -b feature/customer-module
-```
-
----
-
-# Fase 3: Implementación (Builder)
-
-El builder implementa el código basado exclusivamente en el planner.
-
-Reglas:
-
-* No implementar código sin planner
-* No desviarse del planner sin actualizar el planner
-* Mantener consistencia arquitectónica
-
-Archivos típicos:
-
-```
-app/
-database/
-config/
-resources/
-```
-
----
-
-# Fase 4: Commits
-
-Formato obligatorio:
-
-```
-{tipo}: {descripcion}
-```
-
-Límite:
-
-```
-Máximo 300 caracteres
-```
-
-Tipos permitidos:
-
-```
-feat
-fix
-refactor
-config
-test
-docs
-style
-chore
-perf
-build
-ci
-revert
-```
-
-Ejemplos válidos:
-
-```
-feat: create customer module
-fix: correct tax calculation
-refactor: simplify validation logic
-config: update cache configuration
-test: add customer module tests
-```
-
-Ejemplos inválidos:
-
-```
-add customer
-fix bug
-update
-```
-
----
-
-# Fase 5: Testing (Tester)
-
-Todo cambio estructural debe ser probado.
-
-Ejecutar:
-
-```
-php artisan test
-```
-
-o equivalente según el proyecto.
-
-Objetivos:
-
-* Validar funcionalidad
-* Detectar regresiones
-* Garantizar estabilidad
-
----
-
-# Fase 6: Push
-
-Enviar rama:
-
-```
-git push origin feature/customer-module
-```
-
-Validaciones automáticas locales verificarán:
-
-* Formato de rama
-* Formato de commit
-* Tests
-* Calidad del código
-
----
-
-# Fase 7: Pull Request (PR)
-
-El Pull Request debe:
-
-* Tener planner asociado
-* Tener commits válidos
-* Pasar validaciones automáticas
-* Pasar tests
-
-El PR representa la unidad de integración.
-
----
-
-# Fase 8: Merge
-
-Solo se permite merge si:
-
-* Todas las validaciones pasan
-* Tests pasan
-* Planner existe
-* Arquitectura es consistente
-
-Destino típico:
-
-```
-main
-```
-
----
-
-# Fase 9: Eliminación automática de ramas
-
-Después del merge, las ramas son eliminadas automáticamente.
-
-Esto evita acumulación de ramas obsoletas.
-
----
-
-# Validaciones automáticas
-
-El sistema valida automáticamente:
-
-Localmente:
-
-* Formato de ramas
-* Formato de commits
-* Calidad del código
-* Tests
-
-Remotamente:
-
-* Existencia de planner
-* Integridad arquitectónica
-* Validación de Pull Request
-* Tests
-* Integración continua
-
----
-
-# Estructura recomendada del proyecto
+# Arquitectura del sistema
 
 ```
 .ai/
- ├── plans/
- └── skills/
-
-.github/
- └── workflows/
-
-app/
-config/
-database/
-resources/
-tests/
+│
+├── blueprints/
+│   ├── _template.md
+│   ├── Product.md
+│   ├── Order.md
+│   └── Customer.md
+│
+├── skills/
+│   ├── logan-planner/
+│   ├── logan-builder/
+│   ├── logan-guardian/
+│   ├── logan-refactor/
+│   └── logan-tester/
 ```
 
 ---
 
-# Reglas fundamentales
+# Componentes del sistema
+
+## 1. logan-planner
+
+Responsabilidad: Diseñar el Blueprint.
+
+Nunca escribe código.
+
+Produce:
+
+```
+.ai/blueprints/{Module}.md
+```
+
+Define:
+
+* modelo
+* migración
+* resource
+* forms
+* table
+* policy
+* tests
+* relaciones
+* enums
+
+Estado inicial:
+
+```
+DRAFT
+```
+
+---
+
+## 2. logan-builder
+
+Responsabilidad: Implementar código.
+
+Fuente única de verdad:
+
+```
+Blueprint APPROVED
+```
 
 Nunca:
 
-* Escribir código estructural sin planner
-* Hacer commit sin formato válido
-* Hacer push con errores
-* Hacer merge sin validaciones
+* diseña
+* mejora
+* optimiza
+* agrega campos
 
-Siempre:
+Solo implementa exactamente lo definido.
 
-* Planificar primero
-* Usar ramas correctamente
-* Usar commits estructurados
-* Escribir código consistente
-* Validar antes de integrar
+Orden obligatorio:
+
+1. Migración
+2. Modelo
+3. Enum
+4. Policy
+5. Resource
+6. Pages
+7. RelationManagers
+8. Tests
+
+---
+
+## 3. logan-guardian
+
+Responsabilidad: Auditar implementación.
+
+Detecta:
+
+* desviaciones del Blueprint
+* malas prácticas
+* violaciones arquitectónicas
+
+Nunca modifica código.
+
+Resultado posible:
+
+```
+APROBADO
+APROBADO CON ADVERTENCIAS
+RECHAZADO
+```
+
+---
+
+## 4. logan-tester
+
+Responsabilidad: Generar tests.
+
+Valida:
+
+* creación
+* edición
+* eliminación
+* listado
+* validaciones definidas
+
+Nunca inventa lógica.
+
+---
+
+## 5. logan-refactor
+
+Responsabilidad: mejorar calidad interna.
+
+Nunca cambia comportamiento.
+
+Permitido:
+
+* mejorar legibilidad
+* mejorar tipado
+* mejorar orden
+
+Prohibido:
+
+* cambiar arquitectura
+* agregar campos
+* eliminar campos
+
+---
+
+# Blueprint
+
+El Blueprint es la especificación técnica completa del módulo.
+
+Ubicación:
+
+```
+.ai/blueprints/
+```
+
+Debe usar la plantilla oficial:
+
+```
+.ai/blueprints/_template.md
+```
+
+---
+
+# Estados del Blueprint
+
+## DRAFT
+
+Diseño incompleto o no aprobado.
+
+No se puede implementar.
+
+---
+
+## APPROVED
+
+Diseño aprobado.
+
+Puede implementarse.
+
+---
+
+## IMPLEMENTED
+
+Código implementado y auditado.
+
+---
+
+## DEPRECATED
+
+Ya no debe usarse.
+
+---
+
+# Regla crítica
+
+logan-builder solo puede implementar Blueprints en estado:
+
+```
+APPROVED
+```
+
+---
+
+# Flujo completo
+
+```
+Usuario solicita módulo
+        │
+        ▼
+logan-planner
+        │
+        ▼
+Blueprint (DRAFT)
+        │
+        ▼
+Usuario revisa y aprueba
+        │
+        ▼
+Blueprint (APPROVED)
+        │
+        ▼
+logan-builder
+        │
+        ▼
+Código generado
+        │
+        ▼
+logan-guardian
+        │
+        ▼
+Auditoría
+        │
+        ▼
+logan-tester
+        │
+        ▼
+Tests generados
+        │
+        ▼
+Blueprint (IMPLEMENTED)
+```
+
+---
+
+# Fuente única de verdad
+
+El Blueprint es la única fuente válida de arquitectura.
+
+El código debe coincidir exactamente.
+
+Nunca al revés.
+
+---
+
+# Regla de integridad
+
+Si el Blueprint no define algo:
+
+No existe.
+
+No puede implementarse.
 
 ---
 
 # Beneficios
 
-Esta arquitectura garantiza:
-
-* Escalabilidad
-* Consistencia
-* Seguridad
-* Trazabilidad
-* Mantenibilidad
-* Facilidad de colaboración
-* Reducción de errores
+Consistencia total
+Arquitectura controlada
+Auditoría completa
+Escalabilidad segura
+Sin improvisación
+Compatible con IA determinista
 
 ---
 
-# Filosofía
+# Cómo crear un nuevo módulo
 
-Planificar primero.
-Implementar segundo.
-Validar siempre.
+Paso 1
 
----
-
-# Flujo resumido
+Solicitar Blueprint:
 
 ```
-crear planner
-crear rama
-implementar
-commit
-push
-crear pull request
-merge
-eliminar rama
+Usar logan-planner para crear módulo Product
+Campos:
+- name
+- price
+```
+
+Paso 2
+
+Revisar Blueprint generado.
+
+Paso 3
+
+Cambiar estado a:
+
+```
+APPROVED
+```
+
+Paso 4
+
+Solicitar implementación:
+
+```
+Usar logan-builder para implementar Product
+```
+
+Paso 5
+
+Auditar:
+
+```
+Usar logan-guardian para auditar Product
+```
+
+Paso 6
+
+Generar tests:
+
+```
+Usar logan-tester para Product
 ```
 
 ---
 
-# Cumplimiento obligatorio
+# Reglas absolutas
 
-Este flujo es obligatorio para todos los desarrolladores y todos los cambios estructurales del proyecto.
+Nunca escribir código sin Blueprint.
+
+Nunca modificar arquitectura sin actualizar Blueprint.
+
+Nunca implementar Blueprint en estado DRAFT.
+
+Nunca asumir campos.
+
+Nunca improvisar.
+
+---
+
+# Resultado final
+
+Sistema determinista.
+
+Arquitectura consistente.
+
+Código auditable.
+
+Seguro para escalar.
+
+Control total sobre Filament v5 y Laravel 12.
 
 # Flujo completo basado en Blueprint — Uso de Planner, Builder, Guardian, Tester y Refactor
 
@@ -367,6 +393,12 @@ El Blueprint define completamente el módulo antes de su implementación.
 
 Todos los demás roles ejecutan responsabilidades estrictas basadas en el Blueprint.
 
+**Regla crítica:**  
+El Blueprint siempre se crea dentro de una rama dedicada.  
+Nunca se crea directamente en `main`.
+
+El estado `APPROVED` solo puede ser definido por el usuario.
+
 ---
 
 # Diagrama general del sistema
@@ -374,49 +406,84 @@ Todos los demás roles ejecutan responsabilidades estrictas basadas en el Bluepr
 ```mermaid
 flowchart TD
 
-A[Requerimiento] --> B[logan-planner]
-B --> C[Blueprint aprobado]
-C --> D[Crear rama feature/...]
-D --> E[logan-builder]
-E --> F[Implementación]
-F --> G[logan-guardian]
-G --> H[Aprobación técnica]
-H --> I[logan-tester]
-I --> J[Tests]
-J --> K[Pull Request]
-K --> L[Merge]
-L --> M[Eliminar rama]
+A[Requerimiento] --> B[Crear rama feature/...]
+B --> C[logan-planner]
+C --> D[Blueprint DRAFT]
+D --> E[Usuario revisa]
+E --> F[Usuario marca APPROVED]
+F --> G[logan-builder]
+G --> H[Implementación]
+H --> I[logan-guardian]
+I --> J[Aprobación técnica]
+J --> K[logan-tester]
+K --> L[Tests]
+L --> M[Commit y Push]
+M --> N[Pull Request]
+N --> O[Merge a main]
+O --> P[Eliminar rama automáticamente]
 ```
 
 ---
 
 # El Blueprint es el núcleo del sistema
 
-Archivo:
+Ubicación:
 
-```text
-.ai/plans/Customer.md
+```
+.ai/blueprints/
 ```
 
-Este archivo define:
+Ejemplo:
 
-* Modelo
-* Migración
-* Resource
-* Formularios
-* Tabla
-* Policies
-* Tests
+```
+.ai/blueprints/Customer.md
+```
+
+Este archivo define completamente:
+
+- Modelo
+- Migración
+- Filament Resource
+- Formularios
+- Tabla
+- Policies
+- Tests
+- Relaciones
+- Enums
 
 Nada puede existir fuera del Blueprint.
 
 ---
 
-# Fase 1 — Planner
+# Fase 0 — Crear rama (PRIMER PASO OBLIGATORIO)
+
+Siempre crear una rama antes de planificar.
+
+Formato obligatorio:
+
+```bash
+feature/{nombre-modulo}
+```
+
+Ejemplo:
+
+```bash
+git checkout -b feature/customer-module
+```
+
+Esto garantiza que:
+
+- El Blueprint no llegará accidentalmente a main
+- El desarrollo queda aislado
+- Todo el ciclo ocurre dentro de la rama
+
+---
+
+# Fase 1 — Planner (crear Blueprint)
 
 Responsable: logan-planner
 
-Objetivo: Crear Blueprint.
+Objetivo: Crear Blueprint en estado DRAFT.
 
 Nunca escribe código.
 
@@ -424,133 +491,76 @@ Nunca escribe código.
 
 ## Prompt correcto
 
-Ejemplo real:
+```
+Usa logan-planner para planificar el módulo Customer.
 
-```text
-Planifica un módulo Customer con los siguientes campos:
+Campos:
 
 - name (string, requerido)
 - email (string, requerido, único)
 - phone (string, opcional)
 - is_active (boolean, default true)
 
-Debe incluir:
-
-- modelo
-- migración
-- filament resource
-- formulario
-- tabla
-- policies
-- testing
-
-Usa formato Blueprint.
+Genera el Blueprint completo.
 ```
 
 ---
 
-## Resultado
+# Fase 2 — Aprobación del usuario (PASO CRÍTICO)
 
-Archivo generado:
+Solo el usuario puede aprobar el Blueprint.
 
-```text
-.ai/plans/Customer.md
+La IA nunca aprueba Blueprints.
+
+El usuario debe cambiar manualmente el Blueprint a:
+
+```
+Estado: APPROVED
 ```
 
-Ejemplo conceptual:
+Ejemplo:
 
-```text
+```
 # Blueprint: Customer
 
-Modelo:
-app/Models/Customer.php
-
-Migración:
-database/migrations/create_customers_table.php
-
-Resource:
-app/Filament/Resources/CustomerResource.php
+Estado: APPROVED
 ```
+
+Sin este estado:
+
+logan-builder no debe ejecutarse.
 
 ---
 
-# Fase 2 — Crear rama
-
-Formato obligatorio:
-
-```bash
-feature/customer-module
-```
-
-Crear rama:
-
-```bash
-git checkout -b feature/customer-module
-```
-
----
-
-# Fase 3 — Builder
+# Fase 3 — Builder (implementación)
 
 Responsable: logan-builder
 
-Objetivo: Construir EXACTAMENTE el Blueprint.
+Objetivo: Implementar EXACTAMENTE el Blueprint APPROVED.
 
-Nunca diseña.
+Nunca:
 
-Nunca improvisa.
+- diseña
+- improvisa
+- agrega campos
 
 ---
 
 ## Prompt correcto
 
-```text
-Implementa el Blueprint definido en:
+```
+Usa logan-builder para implementar el Blueprint:
 
-.ai/plans/Customer.md
+.ai/blueprints/Customer.md
 ```
 
 ---
 
-## Resultado esperado
-
-Archivos creados:
-
-```text
-app/Models/Customer.php
-database/migrations/create_customers_table.php
-app/Filament/Resources/CustomerResource.php
-app/Policies/CustomerPolicy.php
-```
-
----
-
-# Diagrama Builder
-
-```mermaid
-flowchart TD
-
-Blueprint --> Migration
-Blueprint --> Model
-Blueprint --> Policy
-Blueprint --> Resource
-Blueprint --> Pages
-Blueprint --> Tests
-```
-
----
-
-# Fase 4 — Guardian
+# Fase 4 — Guardian (auditoría)
 
 Responsable: logan-guardian
 
-Objetivo: Auditar implementación.
-
-Detecta:
-
-* violaciones
-* errores
-* inconsistencias
+Objetivo: Auditar que el código coincide exactamente con el Blueprint.
 
 Nunca modifica código.
 
@@ -558,56 +568,28 @@ Nunca modifica código.
 
 ## Prompt correcto
 
-```text
-Audita el siguiente código contra el Blueprint:
+```
+Usa logan-guardian para auditar contra el Blueprint:
 
-.ai/plans/Customer.md
-
-Archivos:
-
-app/Models/Customer.php
-app/Filament/Resources/CustomerResource.php
-database/migrations/create_customers_table.php
+.ai/blueprints/Customer.md
 ```
 
 ---
 
-## Resultado esperado
-
-```text
-Estado general: Correcto
-
-Violaciones CRITICAL: Ninguna
-
-Recomendación final: APROBADO
-```
-
----
-
-# Fase 5 — Tester
+# Fase 5 — Tester (tests)
 
 Responsable: logan-tester
 
-Objetivo: Crear tests basados en Blueprint.
+Objetivo: Generar tests basados estrictamente en Blueprint.
 
 ---
 
 ## Prompt correcto
 
-```text
-Genera tests para el Blueprint:
-
-.ai/plans/Customer.md
 ```
+Usa logan-tester para generar tests del Blueprint:
 
----
-
-## Resultado esperado
-
-Archivo:
-
-```text
-tests/Feature/Filament/CustomerResourceTest.php
+.ai/blueprints/Customer.md
 ```
 
 ---
@@ -616,15 +598,36 @@ tests/Feature/Filament/CustomerResourceTest.php
 
 Formato obligatorio:
 
-```bash
-feat: implement customer module
+```
+{tipo}: {descripcion}
 ```
 
-Ejemplo:
+Tipos permitidos:
+
+```
+feat
+fix
+refactor
+test
+docs
+chore
+perf
+build
+ci
+```
+
+Ejemplo válido:
 
 ```bash
 git commit -m "feat: implement customer module"
 ```
+
+Reglas:
+
+- máximo 300 caracteres
+- en minúsculas
+- sin punto final
+- debe describir el cambio claramente
 
 ---
 
@@ -638,164 +641,53 @@ git push origin feature/customer-module
 
 # Fase 8 — Pull Request
 
-```text
+```
 feature/customer-module → main
 ```
 
-Validaciones ejecutadas:
+Validaciones automáticas:
 
-* planner existe
-* builder consistente
-* guardian aprobado
-* tests válidos
+- existe Blueprint
+- Blueprint está APPROVED
+- implementación coincide
+- tests válidos
+- formato correcto
 
 ---
 
 # Fase 9 — Merge
 
-Después del merge:
-
-```mermaid
-flowchart LR
-
-feature/customer-module --> main
-```
-
-Rama eliminada automáticamente.
+Después del merge la rama será eliminada automáticamente.
 
 ---
 
-# Fase 10 — Refactor (Opcional)
+# Fase 10 — Refactor (opcional)
 
 Responsable: logan-refactor
 
-Objetivo:
-
-Mejorar código SIN alterar Blueprint.
+Objetivo: mejorar calidad interna sin alterar Blueprint.
 
 ---
 
 ## Prompt correcto
 
-```text
-Refactoriza el siguiente archivo sin alterar el Blueprint:
+```
+Usa logan-refactor para mejorar este archivo sin alterar Blueprint:
 
 app/Models/Customer.php
 
 Blueprint:
 
-.ai/plans/Customer.md
-```
-
----
-
-# Diagrama completo del ciclo de vida
-
-```mermaid
-sequenceDiagram
-
-participant Dev
-participant Planner
-participant Builder
-participant Guardian
-participant Tester
-participant Git
-
-Dev->>Planner: Prompt planificación
-Planner->>Dev: Blueprint
-
-Dev->>Git: Crear rama
-
-Dev->>Builder: Prompt implementación
-Builder->>Git: Crear código
-
-Dev->>Guardian: Auditoría
-Guardian->>Dev: Aprobado
-
-Dev->>Tester: Crear tests
-Tester->>Git: Crear tests
-
-Dev->>Git: Commit
-Dev->>Git: Push
-
-Dev->>Git: Pull Request
-Git->>Git: Merge
-```
-
----
-
-# Resumen de responsabilidades
-
-| Skill          | Responsabilidad                            |
-| -------------- | ------------------------------------------ |
-| logan-planner  | Diseñar Blueprint                          |
-| logan-builder  | Implementar Blueprint                      |
-| logan-guardian | Auditar implementación                     |
-| logan-tester   | Crear tests                                |
-| logan-refactor | Mejorar calidad sin cambiar comportamiento |
-
----
-
-# Regla fundamental absoluta
-
-Blueprint es la única fuente de verdad.
-
-Si algo no está en el Blueprint:
-
-No existe.
-
-No puede implementarse.
-
----
-
-# Ejemplo completo real
-
-Planner prompt:
-
-```text
-Planifica módulo Product con:
-
-- name
-- price
-- is_active
-```
-
-Builder prompt:
-
-```text
-Implementa Blueprint:
-
-.ai/plans/Product.md
-```
-
-Guardian prompt:
-
-```text
-Audita implementación contra Blueprint Product
-```
-
-Tester prompt:
-
-```text
-Genera tests para Blueprint Product
-```
-
-Refactor prompt:
-
-```text
-Refactoriza Product sin alterar Blueprint
+.ai/blueprints/Customer.md
 ```
 
 ---
 
 # Resultado final
 
-Sistema determinista.
-
-Predecible.
-
-Auditable.
-
-Seguro.
-
-Escalable.
+Sistema determinista  
+Arquitectura protegida  
+Sin improvisación  
+Sin desviaciones  
+Seguro para escalar  
+Compatible con Laravel 12 y Filament v5
