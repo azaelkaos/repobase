@@ -64,6 +64,17 @@ Usar:
 
 ---
 
+# Regla 5 — Uso de plantilla
+
+Debes usar EXACTAMENTE la plantilla ubicada en:
+
+.ai/blueprints/_template.md
+
+No puedes alterar su estructura.
+Debes completar todas las secciones.
+
+---
+
 # Resultado requerido
 
 Tu respuesta DEBE seguir EXACTAMENTE esta estructura:
