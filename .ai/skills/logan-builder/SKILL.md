@@ -94,7 +94,7 @@ Nunca implementar sin Blueprint APPROVED.
 
 Ruta válida:
 
-.ai/blueprints/{Module}.md
+.ai/blueprints/plan/{Module}.md
 
 ---
 
